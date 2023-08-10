@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,9 @@ public class UserController {
 
 	@Autowired
 	UserRepository userRepo;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	
 	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping(value = "/users")
@@ -51,6 +55,7 @@ public class UserController {
 			if (existingUsers.size() > 0) {
 				return ResponseEntity.badRequest().body(new ErrorResponse(99L, "User Already Exists!!!"));
 			}
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			User userResponse = userRepo.save(user);
 			return ResponseEntity.accepted().body(userResponse);
 
